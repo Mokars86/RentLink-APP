@@ -1,0 +1,8 @@
+{
+  "name": "RentLink",
+  "description": "Connect directly. Rent smarter. A platform for direct rental listings without agents.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
