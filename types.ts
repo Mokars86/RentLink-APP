@@ -12,7 +12,10 @@ export enum ViewState {
   POST_AD = 'POST_AD',
   CHAT = 'CHAT',
   CHAT_DETAIL = 'CHAT_DETAIL',
-  PROFILE = 'PROFILE'
+  PROFILE = 'PROFILE',
+  SETTINGS = 'SETTINGS',
+  PAYMENTS = 'PAYMENTS',
+  SUPPORT = 'SUPPORT'
 }
 
 export interface Property {
