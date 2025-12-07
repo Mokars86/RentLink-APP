@@ -4,6 +4,7 @@ export enum UserRole {
 }
 
 export enum ViewState {
+  SPLASH = 'SPLASH',
   ONBOARDING = 'ONBOARDING',
   AUTH = 'AUTH',
   HOME = 'HOME',
@@ -34,6 +35,7 @@ export interface Property {
   isVerified: boolean;
   latitude: number;
   longitude: number;
+  views?: number;
 }
 
 export interface User {

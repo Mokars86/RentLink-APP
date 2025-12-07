@@ -14,7 +14,14 @@ import {
   TrendingUp,
   Eye,
   CreditCard,
-  Search
+  Search,
+  Heart,
+  Trash2,
+  Edit2,
+  Calendar,
+  Settings,
+  HelpCircle,
+  Home as HomeIcon
 } from 'lucide-react';
 import { 
   LineChart, 
@@ -46,8 +53,8 @@ const MOCK_PROPERTIES: Property[] = [
     description: 'A stunning open-concept loft with high ceilings and exposed brick walls. Located just steps away from the central station.',
     amenities: ['WiFi', 'Air Conditioning', 'Gym', 'Parking'],
     images: ['https://picsum.photos/800/600?random=1', 'https://picsum.photos/800/600?random=2'],
-    ownerId: 'owner1',
-    ownerName: 'Sarah Jenkins',
+    ownerId: 'me', // Changed to 'me' for Owner Profile demo
+    ownerName: 'John Doe',
     rating: 4.8,
     reviewsCount: 12,
     isVerified: true,
@@ -132,41 +139,70 @@ const ANALYTICS_DATA = [
 ];
 
 export default function App() {
-  const [view, setView] = useState<ViewState>(ViewState.ONBOARDING);
+  const [view, setView] = useState<ViewState>(ViewState.SPLASH);
   const [role, setRole] = useState<UserRole>(UserRole.RENTER);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [selectedChat, setSelectedChat] = useState<ChatSession | null>(null);
   const [properties, setProperties] = useState<Property[]>(MOCK_PROPERTIES);
 
+  useEffect(() => {
+    if (view === ViewState.SPLASH) {
+      const timer = setTimeout(() => {
+        setView(ViewState.ONBOARDING);
+      }, 2500); // 2.5 seconds splash screen
+      return () => clearTimeout(timer);
+    }
+  }, [view]);
+
   // --- SUB-COMPONENTS (Defined here for file compactness) ---
+
+  // 0. Splash Screen
+  const SplashView = () => (
+    <div className="flex flex-col items-center justify-center h-screen bg-brand-500 text-white relative overflow-hidden">
+      <div className="absolute top-[-20%] right-[-20%] w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse-slow"></div>
+      <div className="absolute bottom-[-20%] left-[-20%] w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
+      
+      <div className="z-10 text-center animate-fade-in-up flex flex-col items-center">
+        <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center mb-6 shadow-xl transform hover:scale-105 transition-transform duration-500">
+             <HomeIcon size={48} className="text-brand-600" strokeWidth={2.5} />
+        </div>
+        <h1 className="text-4xl font-extrabold mb-2 tracking-tight drop-shadow-sm">RentLink</h1>
+        <div className="h-1 w-16 bg-white/50 rounded-full mb-3"></div>
+        <p className="text-brand-100 font-medium tracking-wide text-sm opacity-90">Connect directly. Rent smarter.</p>
+      </div>
+    </div>
+  );
 
   // 1. Onboarding
   const OnboardingView = () => (
-    <div className="flex flex-col h-screen bg-white">
+    <div className="flex flex-col h-screen bg-white animate-fade-in-up">
       <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-6">
-        <div className="w-full h-64 bg-brand-50 rounded-3xl overflow-hidden mb-4 relative">
+        <div className="w-full h-64 bg-brand-50 rounded-3xl overflow-hidden mb-4 relative shadow-lg">
              <img src="https://picsum.photos/800/1000?random=10" className="object-cover w-full h-full opacity-90" alt="Home" />
-             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end justify-center p-6">
-                 <h1 className="text-3xl font-bold text-white">RentLink</h1>
+             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end justify-center p-8">
+                 <h1 className="text-3xl font-bold text-white drop-shadow-md">Find Your Place</h1>
              </div>
         </div>
         <div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Connect Directly</h2>
-          <p className="text-gray-500">Rent homes, offices, and shops directly from owners. No agents, no hidden fees.</p>
+          <p className="text-gray-500 leading-relaxed">Rent homes, offices, and shops directly from owners. No agents, no hidden fees.</p>
         </div>
       </div>
       <div className="p-8 pb-10 space-y-3">
-        <Button fullWidth onClick={() => setView(ViewState.AUTH)}>Get Started</Button>
+        <Button fullWidth onClick={() => setView(ViewState.AUTH)} className="shadow-brand-500/40">Get Started</Button>
       </div>
     </div>
   );
 
   // 2. Auth
   const AuthView = () => (
-    <div className="flex flex-col h-screen bg-white p-6 justify-center max-w-md mx-auto w-full">
+    <div className="flex flex-col h-screen bg-white p-6 justify-center max-w-md mx-auto w-full animate-fade-in-up">
       <div className="mb-8 text-center">
+        <div className="w-16 h-16 bg-brand-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-brand-600">
+           <HomeIcon size={32} />
+        </div>
         <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
-        <p className="text-gray-500">Sign in to continue</p>
+        <p className="text-gray-500">Sign in to continue to RentLink</p>
       </div>
       <div className="space-y-4">
         <Input label="Email Address" value="" onChange={() => {}} placeholder="you@example.com" />
@@ -203,7 +239,7 @@ export default function App() {
                 Dubai Marina, UAE
               </div>
             </div>
-            <div className="h-10 w-10 bg-gray-200 rounded-full overflow-hidden border-2 border-white shadow-sm">
+            <div className="h-10 w-10 bg-gray-200 rounded-full overflow-hidden border-2 border-white shadow-sm cursor-pointer" onClick={() => setView(ViewState.PROFILE)}>
                 <img src="https://picsum.photos/100/100?random=user" alt="User" />
             </div>
           </div>
@@ -225,7 +261,7 @@ export default function App() {
                 key={type}
                 onClick={() => setFilterType(type)}
                 className={`px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
-                  filterType === type ? 'bg-brand-500 text-white' : 'bg-gray-100 text-gray-600'
+                  filterType === type ? 'bg-brand-500 text-white shadow-md shadow-brand-500/20' : 'bg-gray-100 text-gray-600'
                 }`}
               >
                 {type}
@@ -623,6 +659,11 @@ export default function App() {
 
   // 7. Profile / Dashboard
   const ProfileView = () => {
+    // For owner demo, find properties where ownerId is 'me'
+    const myListings = properties.filter(p => p.ownerId === 'me');
+    // For renter demo, just mock some 'saved' properties
+    const savedListings = properties.slice(1, 3);
+
     return (
         <div className="bg-gray-50 min-h-screen pb-24">
             <div className="bg-white p-6 pt-12 rounded-b-3xl shadow-sm mb-6">
@@ -632,61 +673,154 @@ export default function App() {
                         <h2 className="text-2xl font-bold">John Doe</h2>
                         <p className="text-gray-500 text-sm">Member since 2023</p>
                         <div className="flex gap-2 mt-2">
-                             <Badge color="blue">{role}</Badge>
-                             <Badge color="green">Verified</Badge>
+                             <Badge color="blue">{role === UserRole.RENTER ? 'Renter' : 'Owner'}</Badge>
+                             <Badge color="green">Verified ID</Badge>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex gap-3 bg-gray-100 p-1 rounded-xl">
                     <button 
                         onClick={() => setRole(UserRole.RENTER)}
-                        className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${role === UserRole.RENTER ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600'}`}
+                        className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${role === UserRole.RENTER ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
                     >
-                        Renter Mode
+                        Renter
                     </button>
                     <button 
                         onClick={() => setRole(UserRole.OWNER)}
-                        className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${role === UserRole.OWNER ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600'}`}
+                        className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${role === UserRole.OWNER ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
                     >
-                        Owner Mode
+                        Owner
                     </button>
                 </div>
             </div>
 
             <div className="px-6 space-y-6">
+                {/* --- OWNER VIEW --- */}
                 {role === UserRole.OWNER && (
-                    <div className="bg-white p-5 rounded-2xl shadow-sm">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                                <TrendingUp size={18} className="text-brand-500"/> Performance
-                            </h3>
-                            <span className="text-xs text-gray-400">Last 7 Days</span>
+                    <>
+                        {/* Analytics */}
+                        <div className="bg-white p-5 rounded-2xl shadow-sm">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                                    <TrendingUp size={18} className="text-brand-500"/> Performance
+                                </h3>
+                                <span className="text-xs text-gray-400">Last 7 Days</span>
+                            </div>
+                            <div className="h-48 w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={ANALYTICS_DATA}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
+                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#9ca3af'}} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#9ca3af'}} />
+                                        <Tooltip contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'}} />
+                                        <Line type="monotone" dataKey="views" stroke="#22c55e" strokeWidth={3} dot={false} activeDot={{r: 4}} />
+                                        <Line type="monotone" dataKey="clicks" stroke="#f97316" strokeWidth={3} dot={false} />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
                         </div>
-                        <div className="h-48 w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={ANALYTICS_DATA}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
-                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#9ca3af'}} />
-                                    <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#9ca3af'}} />
-                                    <Tooltip contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'}} />
-                                    <Line type="monotone" dataKey="views" stroke="#22c55e" strokeWidth={3} dot={false} activeDot={{r: 4}} />
-                                    <Line type="monotone" dataKey="clicks" stroke="#f97316" strokeWidth={3} dot={false} />
-                                </LineChart>
-                            </ResponsiveContainer>
+
+                        {/* My Listings */}
+                        <div>
+                            <div className="flex justify-between items-center mb-3">
+                                <h3 className="font-bold text-lg">My Listings</h3>
+                                <button className="text-brand-600 text-xs font-semibold" onClick={() => setView(ViewState.POST_AD)}>+ Add New</button>
+                            </div>
+                            <div className="space-y-4">
+                                {myListings.map(item => (
+                                    <div key={item.id} className="bg-white p-3 rounded-xl flex gap-3 shadow-sm">
+                                        <img src={item.images[0]} className="w-20 h-20 rounded-lg object-cover" alt="listing" />
+                                        <div className="flex-1 flex flex-col justify-between">
+                                            <div>
+                                                <h4 className="font-bold text-sm line-clamp-1">{item.title}</h4>
+                                                <p className="text-xs text-gray-500">{item.views || 142} views • {item.reviewsCount} reviews</p>
+                                            </div>
+                                            <div className="flex gap-2 mt-2">
+                                                <button className="flex-1 py-1.5 rounded-lg bg-gray-50 text-xs font-medium text-gray-700 flex items-center justify-center gap-1 hover:bg-gray-100">
+                                                    <Edit2 size={12} /> Edit
+                                                </button>
+                                                <button className="flex-1 py-1.5 rounded-lg bg-red-50 text-xs font-medium text-red-600 flex items-center justify-center gap-1 hover:bg-red-100">
+                                                    <Trash2 size={12} /> Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                                {myListings.length === 0 && (
+                                    <div className="text-center py-8 bg-white rounded-xl text-gray-400 text-sm">
+                                        No active listings.
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    </>
                 )}
 
-                <div className="space-y-2">
+                {/* --- RENTER VIEW --- */}
+                {role === UserRole.RENTER && (
+                    <>
+                        {/* Saved Homes */}
+                        <div>
+                            <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
+                                <Heart size={18} className="text-red-500 fill-red-500"/> Saved Homes
+                            </h3>
+                            <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+                                {savedListings.map(item => (
+                                    <div key={item.id} className="min-w-[160px] w-[160px] bg-white rounded-xl overflow-hidden shadow-sm" onClick={() => { setSelectedProperty(item); setView(ViewState.DETAILS); }}>
+                                        <div className="h-24 relative">
+                                            <img src={item.images[0]} className="w-full h-full object-cover" alt="saved" />
+                                            <div className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-sm">
+                                                <Heart size={12} className="text-red-500 fill-red-500" />
+                                            </div>
+                                        </div>
+                                        <div className="p-3">
+                                            <h4 className="font-bold text-xs truncate mb-1">{item.title}</h4>
+                                            <p className="text-xs text-brand-600 font-bold">${item.price}/mo</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Recent Bookings */}
+                        <div>
+                            <h3 className="font-bold text-lg mb-3">Recent Bookings</h3>
+                            <div className="bg-white rounded-xl shadow-sm divide-y divide-gray-50">
+                                <div className="p-4 flex gap-3">
+                                    <div className="bg-green-100 p-2 rounded-lg h-fit text-green-600">
+                                        <Calendar size={20} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-sm">Modern Loft in Downtown</h4>
+                                        <p className="text-xs text-gray-500">Oct 12 - Oct 15, 2024</p>
+                                        <span className="inline-block mt-1 px-2 py-0.5 bg-green-50 text-green-700 text-[10px] font-bold rounded">CONFIRMED</span>
+                                    </div>
+                                </div>
+                                <div className="p-4 flex gap-3 opacity-60">
+                                    <div className="bg-gray-100 p-2 rounded-lg h-fit text-gray-500">
+                                        <Calendar size={20} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-sm">Bright Studio</h4>
+                                        <p className="text-xs text-gray-500">Sep 01 - Sep 30, 2024</p>
+                                        <span className="inline-block mt-1 px-2 py-0.5 bg-gray-100 text-gray-500 text-[10px] font-bold rounded">COMPLETED</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </>
+                )}
+
+                {/* Common Settings */}
+                <div className="space-y-2 pt-2">
                     {[
-                        { icon: <CreditCard size={20} />, label: 'Payments & Cards' },
-                        { icon: <Star size={20} />, label: 'My Reviews' },
-                        { icon: <CheckCircle size={20} />, label: 'Verification Status' },
-                        { icon: <MoreVertical size={20} />, label: 'Settings' },
+                        { icon: <CreditCard size={20} />, label: 'Payments & Payouts' },
+                        { icon: <Settings size={20} />, label: 'Account Settings' },
+                        { icon: <HelpCircle size={20} />, label: 'Help & Support' },
                         { icon: <LogOut size={20} />, label: 'Log Out', danger: true },
                     ].map((item, i) => (
-                        <button key={i} className="w-full bg-white p-4 rounded-xl flex items-center gap-4 hover:bg-gray-50 transition-colors">
+                        <button key={i} className="w-full bg-white p-4 rounded-xl flex items-center gap-4 hover:bg-gray-50 transition-colors shadow-sm border border-gray-100/50">
                             <div className={`p-2 rounded-lg ${item.danger ? 'bg-red-50 text-red-500' : 'bg-gray-100 text-gray-600'}`}>
                                 {item.icon}
                             </div>
@@ -730,7 +864,8 @@ export default function App() {
             </div>
          </div>
        )}
-
+       
+       {view === ViewState.SPLASH && <SplashView />}
        {view === ViewState.ONBOARDING && <OnboardingView />}
        {view === ViewState.AUTH && <AuthView />}
        {view === ViewState.HOME && <HomeView />}
